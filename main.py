@@ -22,33 +22,32 @@ load_dotenv()
 last_message = ""
 ACCESS_KEY = 'jsoYHt2GJ3T+6zAvfSgtzBRekNzQioEhisl97z2xQ/TuSRTJfNvphQ=='
 KEYWORD_FILE_PATH = '/Users/raymond/OpenHome/Hey-Open-Home_en_mac_v3_0_0.ppn'
-# porcupine = pvporcupine.create(
-#   access_key='jsoYHt2GJ3T+6zAvfSgtzBRekNzQioEhisl97z2xQ/TuSRTJfNvphQ==',
-#   keyword_paths=['/Users/raymond/OpenHome/Hey-Open-Home_en_mac_v3_0_0.ppn']
-# )
+porcupine = pvporcupine.create(
+  access_key='jsoYHt2GJ3T+6zAvfSgtzBRekNzQioEhisl97z2xQ/TuSRTJfNvphQ==',
+  keyword_paths=['/Users/raymond/OpenHome/Hey-Open-Home_en_mac_v3_0_0.ppn']
+)
 
 def Wake_Word_Detection():
    
-#    recorder = PvRecorder(device_index=-1, frame_length=512)
+   recorder = PvRecorder(device_index=-1, frame_length=512)
 
-#    try:
-#      recorder.start()
+   try:
+     recorder.start()
 
-#      while True:
-#         frame = recorder.read()
-#         keyword_index = porcupine.process(frame)
-#         if keyword_index == 0:
-#             print('Wake word detected!')
-#             greeting = input("Hi, how would you like me to address you? ")
-#             TTS("Hello " + greeting + ", you are entering a speech to text program now. Press enter to exit.")
-#             # TTS("Hello Raymond, you are entering a speech to text program now. Press enter to exit.")
-#             break
-#             porcupine.delete()
-#    except KeyboardInterrupt:
-#         recorder.stop()
-#    finally:
-#         recorder.delete()
-        TTS("Hello nigga, you are entering a speech to text program now. Press enter to exit.")
+     while True:
+        frame = recorder.read()
+        keyword_index = porcupine.process(frame)
+        if keyword_index == 0:
+            print('Wake word detected!')
+            greeting = input("Hi, how would you like me to address you? ")
+            TTS("Hello " + greeting + ", you are entering a speech to text program now. Press enter to exit.")
+            # TTS("Hello Raymond, you are entering a speech to text program now. Press enter to exit.")
+            break
+            porcupine.delete()
+   except KeyboardInterrupt:
+        recorder.stop()
+   finally:
+        recorder.delete()
         STT()
 
 
