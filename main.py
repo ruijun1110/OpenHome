@@ -4,6 +4,9 @@ from pvrecorder import PvRecorder
 from dotenv import load_dotenv
 import logging, verboselogs
 from time import sleep
+import websockets
+import json
+import asyncio
 
 from deepgram import (
     DeepgramClient,
@@ -134,9 +137,26 @@ def TTS(text):
     play_obj.wait_done()  # Wait until sound has finished playing
 
 
-def main():
-    Wake_Word_Detection()
-    # STT()
+# def main():
+#     Wake_Word_Detection()
+#     # STT()
+async def main():
+    try:
+        async with websockets.connect('wss://api.deepgram.com/v1/listen',
+        # Remember to replace the YOUR_DEEPGRAM_API_KEY placeholder with your Deepgram API Key
+        extra_headers = { 'Authorization': f'token 2a1434f3fde551de795df913574f0b844c72db50' }) as ws:
+        # If the request is successful, print the request ID from the HTTP header
+            print('🟢 Successfully opened connection')
+            print(f'Request ID: {ws.response_headers["dg-request-id"]}')
+            await ws.send(json.dumps({
+                'type': 'CloseStream'
+            }))
+    except websockets.exceptions.InvalidStatusCode as e:
+        # If the request fails, print both the error message and the request ID from the HTTP headers
+        print(f'🔴 ERROR: Could not connect to Deepgram! {e.headers.get("dg-error")}')
+        print(f'🔴 Please contact Deepgram Support with request ID {e.headers.get("dg-request-id")}')
 
-if __name__ == "__main__":
-    main()
+asyncio.run(main())
+
+# if __name__ == "__main__":
+#     main()
