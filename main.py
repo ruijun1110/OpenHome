@@ -42,8 +42,8 @@ def Wake_Word_Detection():
             greeting = input("Hi, how would you like me to address you? ")
             TTS("Hello " + greeting + ", you are entering a speech to text program now. Press enter to exit.")
             # TTS("Hello Raymond, you are entering a speech to text program now. Press enter to exit.")
-            break
             porcupine.delete()
+            break
    except KeyboardInterrupt:
         recorder.stop()
    finally:
