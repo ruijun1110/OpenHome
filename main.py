@@ -8,6 +8,7 @@ import websockets
 import json
 import asyncio
 
+
 from deepgram import (
     DeepgramClient,
     DeepgramClientOptions,
@@ -20,15 +21,19 @@ from deepgram import (
 from mycroft_plugin_tts_mimic3 import Mimic3TTSPlugin
 import simpleaudio as sa
 
+import torch
+from transformers import pipeline
+from ctransformers import AutoModelForCausalLM, AutoConfig, Config
+
 load_dotenv()
 
-last_message = ""
-ACCESS_KEY = 'jsoYHt2GJ3T+6zAvfSgtzBRekNzQioEhisl97z2xQ/TuSRTJfNvphQ=='
-KEYWORD_FILE_PATH = '/home/raymond/OpenHome/Hey-Open-Home_en_mac_v3_0_0.ppn'
-porcupine = pvporcupine.create(
-  access_key='jsoYHt2GJ3T+6zAvfSgtzBRekNzQioEhisl97z2xQ/TuSRTJfNvphQ==',
-  keyword_paths=['/home/raymond/OpenHome/Hey-Open-Home_en_raspberry-pi_v3_0_0.ppn']
-)
+# last_message = ""
+# ACCESS_KEY = 'jsoYHt2GJ3T+6zAvfSgtzBRekNzQioEhisl97z2xQ/TuSRTJfNvphQ=='
+# KEYWORD_FILE_PATH = '/home/raymond/OpenHome/Hey-Open-Home_en_mac_v3_0_0.ppn'
+# porcupine = pvporcupine.create(
+#   access_key='jsoYHt2GJ3T+6zAvfSgtzBRekNzQioEhisl97z2xQ/TuSRTJfNvphQ==',
+#   keyword_paths=['/home/raymond/OpenHome/Hey-Open-Home_en_raspberry-pi_v3_0_0.ppn']
+# )
 
 def Wake_Word_Detection():
    
@@ -138,27 +143,41 @@ def TTS(text):
 
 
 def main():
-    Wake_Word_Detection()
-    # STT()
-    
-# For testing connection purposes
-# async def main():
-#     try:
-#         async with websockets.connect('wss://api.deepgram.com/v1/listen',
-#         # Remember to replace the YOUR_DEEPGRAM_API_KEY placeholder with your Deepgram API Key
-#         extra_headers = { 'Authorization': f'token 2a1434f3fde551de795df913574f0b844c72db50' }) as ws:
-#         # If the request is successful, print the request ID from the HTTP header
-#             print('🟢 Successfully opened connection')
-#             print(f'Request ID: {ws.response_headers["dg-request-id"]}')
-#             await ws.send(json.dumps({
-#                 'type': 'CloseStream'
-#             }))
-#     except websockets.exceptions.InvalidStatusCode as e:
-#         # If the request fails, print both the error message and the request ID from the HTTP headers
-#         print(f'🔴 ERROR: Could not connect to Deepgram! {e.headers.get("dg-error")}')
-#         print(f'🔴 Please contact Deepgram Support with request ID {e.headers.get("dg-request-id")}')
+    conf = AutoConfig(Config(temperature=0.1, repetition_penalty=1.1, batch_size=52,max_new_tokens=50, context_length=2048, gpu_layers=4))
+    llm = AutoModelForCausalLM.from_pretrained("./zephyr-7b-beta.Q5_K_S.gguf", config = conf)
+    system_prompt = "Act as a smart speaker algorithm to decide which function to call. \
+        When you receive the user request, consider the context and the user's intent and choose the most appropriate command function from the list below to accurately respond to the user's needs. \
+        Do not answer the question, just response the chosen command function name. Select from the options below. Reply with just the available command functions in the format of [Command Function]. \
+        Here are the list of available command function: [Play Music, Set Alarm, Check Weather, Set Timer, Read News, Control Smart Home Devices, Send a Message, Create Calendar Events, Play Audiobooks or Podcasts, Ask for Definitions or Facts, Shopping List Additions, Play Radio, Call Uber, Set Reminders, Cooking Assistance, Translation Services, Flight Information, Stock Market Updates, Find Phone, Bedtime Routine]."
+    while(True):
+        prompt = input("Enter a prompt: ")
+        template = f'''<|system|>{system_prompt}</s><|user|>{prompt}</s><|assistant|>'''
+        print(llm(template))
+    # Wake_Word_Detection()
+# Install transformers from source - only needed for versions <= v4.34
+# pip install git+https://github.com/huggingface/transformers.git
+# pip install accelerate
 
-# asyncio.run(main())
+    # pipe = pipeline("text-generation", model="HuggingFaceH4/zephyr-7b-beta", torch_dtype=torch.float16, device_map="auto")
+
+    # # We use the tokenizer's chat template to format each message - see https://huggingface.co/docs/transformers/main/en/chat_templating
+    # messages = [
+    #     {
+    #         "role": "system",
+    #         "content": "You are a friendly chatbot who always responds in the style of a pirate",
+    #     },
+    #     {"role": "user", "content": "How many helicopters can a human eat in one sitting?"},
+    # ]
+    # prompt = pipe.tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
+    # outputs = pipe(prompt, max_new_tokens=256, do_sample=True, temperature=0.7, top_k=50, top_p=0.95)
+    # print(outputs[0]["generated_text"])
+# <|system|>
+# You are a friendly chatbot who always responds in the style of a pirate.</s>
+# <|user|>
+# How many helicopters can a human eat in one sitting?</s>
+# <|assistant|>
+# Ah, me hearty matey! But yer question be a puzzler! A human cannot eat a helicopter in one sitting, as helicopters are not edible. They be made of metal, plastic, and other materials, not food!
+
 
 if __name__ == "__main__":
     main()
