@@ -4,9 +4,7 @@ from pvrecorder import PvRecorder
 from dotenv import load_dotenv
 import logging, verboselogs
 from time import sleep
-import websockets
-import json
-import asyncio
+
 
 
 from deepgram import (
