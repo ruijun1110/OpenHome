@@ -19,8 +19,7 @@ from deepgram import (
 from mycroft_plugin_tts_mimic3 import Mimic3TTSPlugin
 import simpleaudio as sa
 
-import torch
-from transformers import pipeline
+# from transformers import pipeline
 from ctransformers import AutoModelForCausalLM, AutoConfig, Config
 
 load_dotenv()
