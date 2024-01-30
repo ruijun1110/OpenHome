@@ -141,7 +141,7 @@ def TTS(text):
 
 def main():
     conf = AutoConfig(Config(temperature=0.1, repetition_penalty=1.1, batch_size=52,max_new_tokens=50, context_length=2048, gpu_layers=4))
-    llm = AutoModelForCausalLM.from_pretrained("./zephyr-7b-beta.Q5_K_S.gguf", config = conf)
+    llm = AutoModelForCausalLM.from_pretrained("./zephyr-7b-beta.Q5_K_S.gguf", model_type="mistral", config = conf)
     system_prompt = "Act as a smart speaker algorithm to decide which function to call. \
         When you receive the user request, consider the context and the user's intent and choose the most appropriate command function from the list below to accurately respond to the user's needs. \
         Do not answer the question, just response the chosen command function name. Select from the options below. Reply with just the available command functions in the format of [Command Function]. \
