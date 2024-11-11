@@ -24,14 +24,6 @@ from ctransformers import AutoModelForCausalLM, AutoConfig, Config
 
 load_dotenv()
 
-# last_message = ""
-# ACCESS_KEY = 'jsoYHt2GJ3T+6zAvfSgtzBRekNzQioEhisl97z2xQ/TuSRTJfNvphQ=='
-# KEYWORD_FILE_PATH = '/home/raymond/OpenHome/Hey-Open-Home_en_mac_v3_0_0.ppn'
-# porcupine = pvporcupine.create(
-#   access_key='jsoYHt2GJ3T+6zAvfSgtzBRekNzQioEhisl97z2xQ/TuSRTJfNvphQ==',
-#   keyword_paths=['/home/raymond/OpenHome/Hey-Open-Home_en_raspberry-pi_v3_0_0.ppn']
-# )
-
 def Wake_Word_Detection():
    
    recorder = PvRecorder(device_index=-1, frame_length=512)
